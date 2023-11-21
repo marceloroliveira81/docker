@@ -44,7 +44,7 @@ services:
     secrets:
       - mysql-db-passwd
     deploy:
-      replicas: 4
+      replicas: 2
       restart_policy:
         condition: on-failure
       placement:
