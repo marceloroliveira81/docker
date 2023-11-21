@@ -9,6 +9,7 @@ services:
       volumes:
         - "/var/run/docker.sock:/var/run/docker.sock"
       deploy:
+        replicas: 2
         restart_policy:
           condition: on-failure
         placement:
