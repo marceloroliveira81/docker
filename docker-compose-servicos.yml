@@ -1,0 +1,131 @@
+version: "3.9"
+
+services:
+  server-mysql:
+    image: mysql
+    # container_name: server-mysql
+    networks:
+      - my-net2
+    volumes:
+      - /mnt/mysql-server:/var/lib/mysql
+    environment:
+      # MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql-root-passwd
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWD}
+      MYSQL_DATABASE: wordpress_db
+      MYSQL_USER: wordpress_user
+      # MYSQL_PASSWORD_FILE: /run/secrets/mysql-db-passwd
+      MYSQL_PASSWORD: ${MYSQL_DB_PASSWD}
+    # restart: always
+    secrets:
+      - mysql-root-passwd
+      - mysql-db-passwd
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.hostname==olv01"
+  
+  server-wordpress:
+    image: wordpress
+    # container_name: server-wordpress
+    networks:
+      - my-net2
+    volumes:
+      - /mnt/wordpress:/var/www/html
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: server-mysql
+      WORDPRESS_DB_USER: wordpress_user
+      # WORDPRESS_DB_PASSWORD_FILE: /run/secrets/mysql-db-passwd
+      WORDPRESS_DB_PASSWORD: ${MYSQL_DB_PASSWD}
+      WORDPRESS_DB_NAME: wordpress_db
+    depends_on:
+      - server-mysql
+    # restart: always
+    secrets:
+      - mysql-db-passwd
+    deploy:
+      replicas: 4
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.role==worker"
+
+  server-phpmyadmin:
+    image: phpmyadmin
+    # container_name: server-phpmyadmin
+    networks:
+      - my-net2
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: server-mysql
+    depends_on:
+      - server-mysql
+    # restart: always
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.hostname==olv01"
+  
+  server-adminer:
+    image: adminer
+    networks:
+      - my-net2
+    ports:
+      - 8083:8080
+    # environment:
+    #   PMA_HOST: server-mysql
+    depends_on:
+      - server-mysql
+    # # restart: always
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.role==worker"
+
+  visualizer:
+    image: alexellis2/visualizer-arm:latest
+    ports:
+      - 8082:8080
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.hostname==olv01"
+
+secrets:
+  mysql-root-passwd:
+    # file: ./mysql-root-passwd.txt
+    external : true
+  mysql-db-passwd:
+    # file: ./mysql-db-passwd.txt
+    external : true
+
+networks:
+  # compose-net:
+  #   driver: bridge
+  # my-net:
+  #   external: true
+  my-net2:
+    external: true
+
+volumes:
+  # volume-compose-mysql:
+  volume-server-mysql:
+    external: true
+  

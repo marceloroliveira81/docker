@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  server-phpmyadmin:
+    image: olv04:5000/phpmyadmin:5.2.1-apache
+    networks:
+      - my-net2
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: server-mysql
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.hostname==olv01"
+  
+  server-adminer:
+    image: olv04:5000/adminer:4.8.1
+    networks:
+      - my-net2
+    ports:
+      - 8083:8080
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.role==worker"
+
+networks:
+  # compose-net:
+  #   driver: bridge
+  # my-net:
+  #   external: true
+  my-net2:
+    external: true

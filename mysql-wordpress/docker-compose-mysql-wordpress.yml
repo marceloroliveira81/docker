@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+  server-mysql:
+    image: olv04:5000/mysql:8.0.33
+    networks:
+      - my-net2
+    volumes:
+      - /mnt/mysql-server:/var/lib/mysql
+    environment:
+      # MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql-root-passwd
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWD}
+      MYSQL_DATABASE: wordpress_db
+      MYSQL_USER: wordpress_user
+      # MYSQL_PASSWORD_FILE: /run/secrets/mysql-db-passwd
+      MYSQL_PASSWORD: ${MYSQL_DB_PASSWD}
+    secrets:
+      - mysql-root-passwd
+      - mysql-db-passwd
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.hostname==olv01"
+  
+  server-wordpress:
+    image: olv04:5000/wordpress:php8.2-apache
+    networks:
+      - my-net2
+    volumes:
+      - /mnt/wordpress:/var/www/html
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: server-mysql
+      WORDPRESS_DB_USER: wordpress_user
+      # WORDPRESS_DB_PASSWORD_FILE: /run/secrets/mysql-db-passwd
+      WORDPRESS_DB_PASSWORD: ${MYSQL_DB_PASSWD}
+      WORDPRESS_DB_NAME: wordpress_db
+    depends_on:
+      - server-mysql
+    secrets:
+      - mysql-db-passwd
+    deploy:
+      replicas: 4
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.role==worker"
+
+secrets:
+  mysql-root-passwd:
+    # file: ./mysql-root-passwd.txt
+    external : true
+  mysql-db-passwd:
+    # file: ./mysql-db-passwd.txt
+    external : true
+
+networks:
+  # compose-net:
+  #   driver: bridge
+  # my-net:
+  #   external: true
+  my-net2:
+    external: true
+
+volumes:
+  # volume-compose-mysql:
+  volume-server-mysql:
+    external: true
+  

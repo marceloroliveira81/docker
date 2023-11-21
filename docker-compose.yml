@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  server-mysql:
+    image: mysql
+    container_name: server-mysql
+    networks:
+      - my-net
+    volumes:
+      - volume-server-mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql-root-passwd
+      MYSQL_DATABASE: wordpress_db
+      MYSQL_USER: wordpress_user
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql-db-passwd
+    restart: always
+    secrets:
+      - mysql-root-passwd
+      - mysql-db-passwd
+
+  server-wordpress:
+    image: wordpress
+    container_name: server-wordpress
+    networks:
+      - my-net
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: server-mysql
+      WORDPRESS_DB_USER: wordpress_user
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/mysql-db-passwd
+      WORDPRESS_DB_NAME: wordpress_db
+    depends_on:
+      - server-mysql
+    restart: always
+    secrets:
+      - mysql-db-passwd
+
+  server-phpmyadmin:
+    image: phpmyadmin
+    container_name: server-phpmyadmin
+    networks:
+      - my-net
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: server-mysql
+    depends_on:
+      - server-mysql
+    restart: always
+
+secrets:
+  mysql-root-passwd:
+    file: ./mysql-root-passwd.txt
+  mysql-db-passwd:
+    file: ./mysql-db-passwd.txt
+
+networks:
+  #compose-net:
+  #  driver: bridge
+  my-net:
+    external: true
+
+volumes:
+  #volume-compose-mysql:
+  volume-server-mysql:
+    external: true
