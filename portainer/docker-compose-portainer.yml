@@ -6,7 +6,7 @@ services:
     container_name: portainer
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /mnt/portainer_data:/data
+      - /homer/oliver/portainer_data:/data
     restart: always
     ports:
       - 9000:9000
