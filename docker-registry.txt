@@ -1,10 +1,36 @@
-docker run -d -p 5000:5000 --restart=always --name registry registry:2 
+docker run -d -p 5000:5000 --restart=always -v /mnt/registry_data:/var/lib/registry -e REGISTRY_STORAGE_DELETE_ENABLED=TRUE --name registry registry:2 
 
 
 ---
 host client config (/etc/docker/daemon.jon)
 
-{ "insecure-registries":["host:port"] } 
+{ "insecure-registries":["host-registy:port"] } 
 
 restart o docker
---
+---
+
+
+---
+listar imagens no registry
+
+curl -i host-registry:5000/v2/_catalog 
+
+http://host-registry:5000/v2/_catalog
+---
+
+
+---
+listar tags no repositorio
+
+curl -i host-registry:5000/v2/repo/tags/list
+
+http://host-registry:5000/v2/repo/tags/list
+---
+
+
+
+curl -v --silent -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -X GET olv04:5000/v2/myubuntu/manifests/latest 2>&1 | grep Docker-Content-Digest | awk '{print ($3)}'
+
+sha256:a55390e44269143335981f43df3ca2630c7a9b43c6cf0805e2c7079ca88b09f6
+
+curl -v --silent -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -X DELETE olv04:5000/v2/myubuntu/manifests/sha256:6de813fb93debd551ea6781e90b02f1f93efab9d882a6cd06bbd96a07188b073
