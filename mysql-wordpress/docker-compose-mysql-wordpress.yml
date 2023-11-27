@@ -49,7 +49,7 @@ services:
         condition: on-failure
       placement:
         constraints:
-          - "node.role==worker"
+          - "node.labels.worker==yes"
 
 secrets:
   mysql-root-passwd:
