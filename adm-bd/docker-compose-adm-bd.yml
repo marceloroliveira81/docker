@@ -29,7 +29,7 @@ services:
         condition: on-failure
       placement:
         constraints:
-          - "node.role==worker"
+          - "node.labels.worker==yes"
 
 networks:
   # compose-net:
