@@ -10,7 +10,7 @@ services:
     ports:
         - 8084:3001
     deploy:
-      replicas: 2
+      replicas: 1
       restart_policy:
         condition: on-failure
       placement:
