@@ -1,2 +1,3 @@
 *.txt
 mysql-wordpress/.env
+typebot/*.env
