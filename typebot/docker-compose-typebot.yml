@@ -31,7 +31,7 @@ services:
           - "node.labels.worker==yes"
     extra_hosts:
       - 'host.docker.internal:host-gateway'
-    env_file: stack.env
+    #env_file: stack.env
 
   typebot-viewer:
     image: baptistearno/typebot-viewer:2.28.2
@@ -44,4 +44,4 @@ services:
       placement:
         constraints:
           - "node.labels.worker==yes"
-    env_file: stack.env
+    #env_file: stack.env
