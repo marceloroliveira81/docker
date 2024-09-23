@@ -45,3 +45,14 @@ services:
         constraints:
           - "node.labels.worker==yes"
     env_file: stack.env
+
+  mail:
+    image: bytemark/smtp
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.worker==yes"
+    env_file: stack.env
