@@ -2,8 +2,7 @@ version: "3.9"
 
 services:
   visualizer:
-      image: alexellis2/visualizer-arm:latest
-      ports:
+      image: alexellis2/visualizer-arm:0.4
         - 8082:8080
       stop_grace_period: 1m30s
       volumes:
