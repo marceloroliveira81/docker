@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.9'
 
 services:
   typebot-db:
@@ -6,15 +6,15 @@ services:
     volumes:
       - /mnt/typebot-db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=typebot
-      - POSTGRES_PASSWORD=typebot
+      - POSTGRES_DB: typebot
+      - POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
       placement:
         constraints:
-          - "node.hostname==olv01"
+          - "node.labels.worker==yes"
     
   typebot-builder:
     image: baptistearno/typebot-builder:2.28.2
