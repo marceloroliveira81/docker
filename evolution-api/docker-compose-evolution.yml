@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  evo-postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - /mnt/evolution-api/postgres:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.worker==yes"
+  
+  evo-redis:
+    image: redis:7-alpine
+    volumes:
+      - /mnt/evolution-api/redis:/data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.worker==yes"
+  
+  evolution_v2:
+    image: atendai/evolution-api:v2.1.1
+    depends_on:
+      - evo-postgres
+      - evo-redis
+    ports:
+      - "8085:8080"
+    volumes:
+      - /mnt/evolution-api/instances:/evolution/instances
+    environment:
+      SERVER_URL: http://129.148.20.245:8085
+      DEL_INSTANCE: 'false'
+      DATABASE_ENABLED: 'true'
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: ${DATABASE_CONNECTION_URI}
+      DATABASE_SAVE_DATA_INSTANCE: 'true'
+      DATABASE_SAVE_DATA_NEW_MESSAGE: 'true'
+      DATABASE_SAVE_MESSAGE_UPDATE: 'true'
+      DATABASE_SAVE_DATA_CONTACTS: 'true'
+      DATABASE_SAVE_DATA_CHATS: 'true'
+      DATABASE_SAVE_DATA_LABELS: 'true'
+      DATABASE_SAVE_DATA_HISTORIC: 'true'
+      DATABASE_CONNECTION_CLIENT_NAME: evolution_v2
+      CACHE_REDIS_ENABLED: 'true'
+      CACHE_REDIS_URI: redis://evo_redis:6379/1
+      CACHE_REDIS_PREFIX_KEY: evolution_v2
+      CACHE_REDIS_SAVE_INSTANCES: 'false'
+      CACHE_LOCAL_ENABLED: 'false'
+      AUTHENTICATION_API_KEY: ${AUTHENTICATION_API_KEY}
+      CONFIG_SESSION_PHONE_CLIENT: EvoAPIv2
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.worker==yes"
+        
