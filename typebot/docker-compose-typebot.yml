@@ -37,7 +37,7 @@ services:
   typebot-viewer:
     image: baptistearno/typebot-viewer:2.28.2
     networks:
-      - ingress
+      - appsnet
     ports:
       - '8081:3000'
     deploy:
