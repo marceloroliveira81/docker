@@ -5,6 +5,7 @@ services:
     image: olv04:5000/redis:7-alpine
     networks:
       - redis
+      - appsnet
     volumes:
       - /mnt/redis:/data
     deploy:
@@ -17,4 +18,6 @@ services:
 
 networks:
   redis:
+    external: true
+  appsnet:
     external: true
