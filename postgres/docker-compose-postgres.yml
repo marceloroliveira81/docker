@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: olv04:5000/postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - postgres
+    volumes:
+      - /mnt/postgres:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.worker==yes"
+
+networks:
+  postgres:
+    external: true
