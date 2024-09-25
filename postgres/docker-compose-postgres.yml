@@ -7,6 +7,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
       - postgres
+      - ingress
     volumes:
       - /mnt/postgres:/var/lib/postgresql/data
     deploy:
@@ -19,4 +20,6 @@ services:
 
 networks:
   postgres:
+    external: true
+  ingress:
     external: true
