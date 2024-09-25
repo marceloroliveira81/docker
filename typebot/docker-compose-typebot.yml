@@ -4,7 +4,7 @@ services:
   typebot-builder:
     image: baptistearno/typebot-builder:2.28.2
     networks:
-      - postgres
+      - ingress
     depends_on:
       - postgres
     ports:
@@ -37,7 +37,7 @@ services:
   typebot-viewer:
     image: baptistearno/typebot-viewer:2.28.2
     networks:
-      - postgres
+      - ingress
     ports:
       - '8081:3000'
     deploy:
@@ -64,5 +64,5 @@ services:
       DISABLE_SIGNUP: ${DISABLE_SIGNUP}
 
 networks:
-  postgres:
+  ingress:
     external: true
