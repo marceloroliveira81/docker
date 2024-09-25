@@ -1,4 +1,2 @@
 *.txt
-mysql-wordpress/.env
-typebot/*.env
-evolution-api/*.env
+*.env
