@@ -1,25 +1,12 @@
-version: '3.9'
+version: '3.8'
 
 services:
-  typebot-db:
-    image: postgres:14-alpine
-    volumes:
-      - /mnt/typebot-db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB: typebot
-      - POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints:
-          - "node.labels.worker==yes"
-    
   typebot-builder:
     image: baptistearno/typebot-builder:2.28.2
+    networks:
+      - postgres
     depends_on:
-      - typebot-db
+      - postgres
     ports:
       - '8080:3000'
     deploy:
@@ -46,11 +33,11 @@ services:
       SMTP_SECURE: ${SMTP_SECURE}
       SMTP_AUTH_DISABLE: ${SMTP_AUTH_DISABLE}
       DISABLE_SIGNUP: ${DISABLE_SIGNUP}
-    #env_file: 
-    #  stack.env
 
   typebot-viewer:
     image: baptistearno/typebot-viewer:2.28.2
+    networks:
+      - postgres
     ports:
       - '8081:3000'
     deploy:
@@ -75,5 +62,7 @@ services:
       SMTP_SECURE: ${SMTP_SECURE}
       SMTP_AUTH_DISABLE: ${SMTP_AUTH_DISABLE}
       DISABLE_SIGNUP: ${DISABLE_SIGNUP}
-    #env_file:
-    #  stack.env
+
+networks:
+  postgres:
+    external: true
