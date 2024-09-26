@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  evolution_v1:
+    image: atendai/evolution-api
+    command: ["node", "./dist/src/main.js"]
+    networks:
+      - appsnet
+    ports:
+      - "8086:8080"
+    volumes:
+      - /mnt/evolution-api-v1/instances:/evolution/instances
+      - /mnt/evolution-api-v1/store:/evolution/store
+    restart: always
+    environment:
+      SERVER_URL: http://129.148.20.245:8086
+      DEL_INSTANCE: 'false'
+      CONFIG_SESSION_PHONE_CLIENT: EvoAPIv1
+      AUTHENTICATION_TYPE: apikey
+      AUTHENTICATION_API_KEY: ${AUTHENTICATION_API_KEY}
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - "node.labels.worker==yes"
+
+networks:
+  appsnet:
+      external: true
