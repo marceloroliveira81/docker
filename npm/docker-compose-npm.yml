@@ -2,12 +2,11 @@ version: '3.8'
 services:
   app:
     image: 'jc21/nginx-proxy-manager:2.11.3'
-    restart: unless-stopped
     ports:
       # These ports are in format <host-port>:<container-port>
       - '80:80' # Public HTTP Port
       - '443:443' # Public HTTPS Port
-      - '81:81' # Admin Web Port
+      - '8090:81' # Admin Web Port
       # Add any other Stream port you want to expose
       # - '21:21' # FTP
 
@@ -29,7 +28,3 @@ services:
       placement:
         constraints:
           - "node.hostname==olv01"
-
-networks:
-  my-net2:
-    external: true
