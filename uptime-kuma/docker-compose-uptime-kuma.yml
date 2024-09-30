@@ -4,7 +4,7 @@ services:
   uptime-kuma:
     image: louislam/uptime-kuma:1
     networks:
-      - my-net2
+      - npm_default
     volumes:
       - /mnt/uptime-kuma:/app/data
     ports:
@@ -18,5 +18,5 @@ services:
           - "node.labels.worker==yes"
 
 networks:
-  my-net2:
+  npm_default:
     external: true
