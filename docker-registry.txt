@@ -1,4 +1,7 @@
-docker run -d -p 5000:5000 --restart=always -v /mnt/registry_data:/var/lib/registry -e REGISTRY_STORAGE_DELETE_ENABLED=TRUE --name registry registry:2 
+docker container run -d -p 5000:5000 --restart=always \
+-v /mnt/registry_data:/var/lib/registry \
+-e REGISTRY_STORAGE_DELETE_ENABLED=TRUE \
+--name registry registry:2
 
 
 ---
@@ -34,3 +37,19 @@ curl -v --silent -H "Accept: application/vnd.docker.distribution.manifest.v2+jso
 sha256:a55390e44269143335981f43df3ca2630c7a9b43c6cf0805e2c7079ca88b09f6
 
 curl -v --silent -H "Accept: application/vnd.docker.distribution.manifest.v2+json" -X DELETE olv04:5000/v2/myubuntu/manifests/sha256:6de813fb93debd551ea6781e90b02f1f93efab9d882a6cd06bbd96a07188b073
+
+
+----
+
+https://tbhaxor.com/securing-private-docker-registry/
+
+openssl req -x509 -nodes -days 365 -newkey rsa:4096 -addext "subjectAltName = IP:129.148.37.27" -keyout certs/registry.key -out certs/registry.crt
+
+docker container run -d -p 5000:443 --restart=always \
+-v /mnt/registry_data:/var/lib/registry \
+-v /mnt/certs:/certs \
+-e REGISTRY_STORAGE_DELETE_ENABLED=TRUE \
+-e REGISTRY_HTTP_ADDR=0.0.0.0:443 \
+-e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.crt \
+-e REGISTRY_HTTP_TLS_KEY=/certs/registry.key \
+--name registry registry:2
