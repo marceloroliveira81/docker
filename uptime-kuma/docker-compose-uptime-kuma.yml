@@ -6,7 +6,7 @@ services:
     networks:
       - npm_default
     volumes:
-      - /mnt/uptime-kuma:/app/data
+      - /dados/uptime-kuma:/app/data
     ports:
         - 3001:3001
     deploy:
