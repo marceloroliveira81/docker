@@ -19,8 +19,8 @@ services:
       # Uncomment this if IPv6 is not enabled on your host
       # DISABLE_IPV6: 'true'
     volumes:
-      - /mnt/nginx-proxy-manager/data:/data
-      - /mnt/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+      - /dados/npm/data:/data
+      - /dados/npm/letsencrypt:/etc/letsencrypt
     deploy:
       replicas: 1
       restart_policy:
