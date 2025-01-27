@@ -27,4 +27,4 @@ services:
         condition: on-failure
       placement:
         constraints:
-          - "node.hostname==olv01"
+          - node.role == manager
